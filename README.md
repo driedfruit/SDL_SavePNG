@@ -9,8 +9,8 @@ than this README.
 
 Add "savepng.c" and "savepng.h" to your project. 
 
-If your project already links SDL_Image, you're set. Otherwise, you must link
-the libpng library, i.e. add the `-lpng` LDFLAG.
+Link the libpng library, i.e. add the `-lpng` LDFLAG (even if you already have
+`-lSDL_image`).
 
 ## Use
 

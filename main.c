@@ -1,6 +1,6 @@
 #include <SDL.h>
 
-#include "savepng.h" // includes <png.h>, you must link with -lpng or -lSDL_image
+#include "savepng.h" // includes <png.h>, you must link with -lpng
 
 int main( int argc, char* args[] )
 {
