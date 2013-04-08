@@ -97,6 +97,7 @@ int SDL_SavePNG_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst)
 			pal_ptr[i].blue  = pal->colors[i].b;
 		}
 		png_set_PLTE(png_ptr, info_ptr, pal_ptr, pal->ncolors);
+		free(pal_ptr);
 	}
 	else if (surface->format->BytesPerPixel > 3 || surface->format->Amask)
 		colortype |= PNG_COLOR_MASK_ALPHA;
@@ -114,6 +115,7 @@ int SDL_SavePNG_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst)
 	for (i = 0; i < surface->h; i++)
 		row_pointers[i] = (png_bytep)(Uint8*)surface->pixels + i * surface->pitch;
 	png_write_image(png_ptr, row_pointers);
+	free(row_pointers);
 #else
 	for (i = 0; i < surface->h; i++)
 		png_write_row(png_ptr, (png_bytep)(Uint8*)surface->pixels + i * surface->pitch);
@@ -121,6 +123,7 @@ int SDL_SavePNG_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst)
 	png_write_end(png_ptr, info_ptr);
 
 	/* Done */
+	png_destroy_write_struct(&png_ptr, &info_ptr);
 	if (freedst) SDL_FreeRW(dst);
 	return (SUCCESS);
 }
