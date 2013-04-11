@@ -89,7 +89,9 @@ int SDL_SavePNG_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst)
 
 	/* Prepare chunks */
 	colortype = PNG_COLOR_MASK_COLOR;
-	if ((pal = surface->format->palette))
+	if (surface->format->BytesPerPixel > 0
+	&&  surface->format->BytesPerPixel <= 8
+	&& (pal = surface->format->palette))
 	{
 		colortype |= PNG_COLOR_MASK_PALETTE;
 		pal_ptr = (png_colorp)malloc(pal->ncolors * sizeof(png_color));
