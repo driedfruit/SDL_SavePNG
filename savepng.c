@@ -25,47 +25,15 @@ static void png_write_SDL(png_structp png_ptr, png_bytep data, png_size_t length
 
 SDL_Surface *SDL_PNGFormatAlpha(SDL_Surface *src) 
 {
-	SDL_Surface *surf;
-	int bpp = 24;
-
 	/* NO-OP for images < 32bpp and 32bpp images that already have Alpha channel */ 
 	if (src->format->BitsPerPixel <= 24 || src->format->Amask) {
-		bpp = 32;
-		/* NO-OP for images 24/32bpp RGB (and not BGR) format */
-		if (src->format->Rmask ==
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-			0xFF000000
-#else
-			0x000000FF
-#endif
-		) {
-			bpp = 0;
-		}
-	}
-
-	/* NO-OP */
-	if (bpp == 0) {
 		src->refcount++;
 		return src;
 	}
 
-	/* Convert 32/24 bpp ABGR image to ARGB format */
-	if (bpp == 32) {
-		surf = SDL_CreateRGBSurface(0, src->w, src->h, src->format->BitsPerPixel,
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-			/* Rmask, Gmask, Bmask, Amask */
-			0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF
-#else
-			0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000
-#endif
-		);
-	}
 	/* Convert 32bpp alpha-less image to 24bpp alpha-less image */
-	if (bpp == 24) {
-		surf = SDL_CreateRGBSurface(src->flags, src->w, src->h, 24,
-			src->format->Rmask, src->format->Gmask, src->format->Bmask, 0);
-	}
-	//SDL_LowerBlit(src, NULL, surf, NULL);
+	SDL_Surface *surf = SDL_CreateRGBSurface(src->flags, src->w, src->h, 24,
+		src->format->Rmask, src->format->Gmask, src->format->Bmask, 0);
 	SDL_BlitSurface(src, NULL, surf, NULL);
 
 	return surf;
