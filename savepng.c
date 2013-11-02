@@ -70,20 +70,20 @@ int SDL_SavePNG_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst)
 	if (!dst)
 	{
 		SDL_SetError("Argument 2 to SDL_SavePNG_RW can't be NULL, expecting SDL_RWops*\n");
-		if (freedst) SDL_FreeRW(dst);
+		if (freedst) SDL_RWclose(dst);
 		return (ERROR);
 	}
 	if (!surface)
 	{
 		SDL_SetError("Argument 1 to SDL_SavePNG_RW can't be NULL, expecting SDL_Surface*\n");
-		if (freedst) SDL_FreeRW(dst);
+		if (freedst) SDL_RWclose(dst);
 		return (ERROR);
 	}
 	png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, png_error_SDL, NULL); /* err_ptr, err_fn, warn_fn */
 	if (!png_ptr) 
 	{
 		SDL_SetError("Unable to png_create_write_struct on %s\n", PNG_LIBPNG_VER_STRING);
-		if (freedst) SDL_FreeRW(dst);
+		if (freedst) SDL_RWclose(dst);
 		return (ERROR);
 	}
 	info_ptr = png_create_info_struct(png_ptr);
@@ -91,13 +91,13 @@ int SDL_SavePNG_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst)
 	{
 		SDL_SetError("Unable to png_create_info_struct\n");
 		png_destroy_write_struct(&png_ptr, NULL);
-		if (freedst) SDL_FreeRW(dst);
+		if (freedst) SDL_RWclose(dst);
 		return (ERROR);
 	}
 	if (setjmp(png_jmpbuf(png_ptr)))	/* All other errors, see also "png_error_SDL" */
 	{
 		png_destroy_write_struct(&png_ptr, &info_ptr);
-		if (freedst) SDL_FreeRW(dst);
+		if (freedst) SDL_RWclose(dst);
 		return (ERROR);
 	}
 
@@ -150,6 +150,6 @@ int SDL_SavePNG_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst)
 
 	/* Done */
 	png_destroy_write_struct(&png_ptr, &info_ptr);
-	if (freedst) SDL_FreeRW(dst);
+	if (freedst) SDL_RWclose(dst);
 	return (SUCCESS);
 }
