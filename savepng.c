@@ -25,6 +25,9 @@ static void png_write_SDL(png_structp png_ptr, png_bytep data, png_size_t length
 
 SDL_Surface *SDL_PNGFormatAlpha(SDL_Surface *src) 
 {
+	SDL_Surface *surf;
+	SDL_Rect rect = { 0 };
+
 	/* NO-OP for images < 32bpp and 32bpp images that already have Alpha channel */ 
 	if (src->format->BitsPerPixel <= 24 || src->format->Amask) {
 		src->refcount++;
@@ -32,9 +35,11 @@ SDL_Surface *SDL_PNGFormatAlpha(SDL_Surface *src)
 	}
 
 	/* Convert 32bpp alpha-less image to 24bpp alpha-less image */
-	SDL_Surface *surf = SDL_CreateRGBSurface(src->flags, src->w, src->h, 24,
+	rect.w = src->w;
+	rect.h = src->h;
+	surf = SDL_CreateRGBSurface(src->flags, src->w, src->h, 24,
 		src->format->Rmask, src->format->Gmask, src->format->Bmask, 0);
-	SDL_BlitSurface(src, NULL, surf, NULL);
+	SDL_LowerBlit(src, &rect, surf, &rect);
 
 	return surf;
 }
