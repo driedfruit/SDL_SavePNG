@@ -12,6 +12,18 @@
 
 #define USE_ROW_POINTERS
 
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+#define rmask 0xFF000000
+#define gmask 0x00FF0000
+#define bmask 0x0000FF00
+#define amask 0x000000FF
+#else
+#define rmask 0x000000FF
+#define gmask 0x0000FF00
+#define bmask 0x00FF0000
+#define amask 0xFF000000
+#endif
+
 /* libpng callbacks */ 
 static void png_error_SDL(png_structp ctx, png_const_charp str)
 {
@@ -115,7 +127,12 @@ int SDL_SavePNG_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst)
 		PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
 
 //	png_set_packing(png_ptr);
-	png_set_bgr(png_ptr);
+
+	/* Allow BGR surfaces */
+	if (surface->format->Rmask == bmask
+	&& surface->format->Gmask == gmask
+	&& surface->format->Bmask == rmask)
+		png_set_bgr(png_ptr);
 
 	/* Write everything */
 	png_write_info(png_ptr, info_ptr);
