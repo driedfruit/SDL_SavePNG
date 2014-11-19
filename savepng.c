@@ -70,7 +70,6 @@ int SDL_SavePNG_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst)
 	if (!dst)
 	{
 		SDL_SetError("Argument 2 to SDL_SavePNG_RW can't be NULL, expecting SDL_RWops*\n");
-		if (freedst) SDL_RWclose(dst);
 		return (ERROR);
 	}
 	if (!surface)
